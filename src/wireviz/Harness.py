@@ -109,7 +109,7 @@ class Harness:
                     if connector.hide_disconnected_pins and not connector.visible_pins.get(pin, False):
                         continue
                     pinlist.append([f'<td port="p{pin}l">{pin}</td>' if connector.ports_left else None,
-                                    f'<td>{pinlabel}</td>' if pinlabel else '',
+                                    f'<td><b>{pinlabel}</b></td>' if pinlabel else '',
                                     f'<td port="p{pin}r">{pin}</td>' if connector.ports_right else None])
 
                 pinhtml = '<table border="0" cellspacing="0" cellpadding="3" cellborder="1">'
@@ -138,6 +138,17 @@ class Harness:
                 for loop in connector.loops:
                     dot.edge(f'{connector.name}:p{loop[0]}{loop_side}:{loop_dir}',
                              f'{connector.name}:p{loop[1]}{loop_side}:{loop_dir}')
+        # determine if there are double- or triple-colored wires in the harness;
+        # if so, pad single-color wires to make all wires of equal thickness
+        for _, cable in self.cables.items():
+            colorlengths = list(map(len, cable.colors))
+            if 4 in colorlengths or 6 in colorlengths:
+                pad = True
+                break
+        else:
+            pad = False
+
+
 
         for _, cable in self.cables.items():
 
@@ -189,8 +200,8 @@ class Harness:
 
             # determine if there are double- or triple-colored wires;
             # if so, pad single-color wires to make all wires of equal thickness
-            colorlengths = list(map(len, cable.colors))
-            pad = 4 in colorlengths or 6 in colorlengths
+            #colorlengths = list(map(len, cable.colors))
+            #pad = 4 in colorlengths or 6 in colorlengths
 
             for i, connection_color in enumerate(cable.colors, 1):
                 p = []
